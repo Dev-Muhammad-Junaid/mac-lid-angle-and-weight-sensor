@@ -128,9 +128,8 @@
         // Data format: [report_id, angle_low, angle_high]
         // Parse the 16-bit value from bytes 1-2 (skipping report ID)
         uint16_t rawValue = (report[2] << 8) | report[1];  // High byte, low byte
-        double angle = (double)rawValue;  // Raw value is already in degrees
-        
-        return angle;
+        // HID orientation reports angle in centidegrees (0.01° per unit).
+        return (double)rawValue / 100.0;
     }
     
     return -2.0;

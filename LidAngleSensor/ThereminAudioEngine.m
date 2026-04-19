@@ -7,6 +7,7 @@
 
 #import "ThereminAudioEngine.h"
 #import <AudioToolbox/AudioToolbox.h>
+#import <QuartzCore/QuartzCore.h>
 
 // Theremin parameter mapping constants
 static const double kMinFrequency = 110.0;       // Hz - A2 note (closed lid)
@@ -36,7 +37,6 @@ static const double kAdditionalDecayFactor = 0.85;    // Additional decay after 
 
 // Audio constants
 static const double kSampleRate = 44100.0;
-static const UInt32 kBufferSize = 512;
 
 @interface ThereminAudioEngine ()
 
@@ -63,6 +63,7 @@ static const UInt32 kBufferSize = 512;
 
 // Vibrato generation
 @property (nonatomic, assign) double vibratoPhase;
+@property (nonatomic, assign) double lastRampTime;
 
 @end
 
@@ -84,6 +85,7 @@ static const UInt32 kBufferSize = 512;
         _phase = 0.0;
         _vibratoPhase = 0.0;
         _phaseIncrement = 2.0 * M_PI * kMinFrequency / kSampleRate;
+        _lastRampTime = 0.0;
         
         if (![self setupAudioEngine]) {
             NSLog(@"[ThereminAudioEngine] Failed to setup audio engine");
@@ -136,6 +138,7 @@ static const UInt32 kBufferSize = 512;
     }
     
     NSLog(@"[ThereminAudioEngine] Started theremin engine");
+    self.lastRampTime = 0.0;
 }
 
 - (void)stopEngine {
@@ -278,7 +281,7 @@ static const UInt32 kBufferSize = 512;
     double velocityBoost = 0.0;
     if (velocity > 0.0) {
         // Use smoothstep curve for natural volume boost response
-        double e0 = 0.0;
+        double e0 = kVelocityFull;
         double e1 = kVelocityQuiet;
         double t = fmin(1.0, fmax(0.0, (velocity - e0) / (e1 - e0)));
         double s = t * t * (3.0 - 2.0 * t); // smoothstep function
@@ -297,12 +300,12 @@ static const UInt32 kBufferSize = 512;
 }
 
 - (void)rampToTargetParameters {
-    // Calculate delta time for ramping
-    static double lastRampTime = 0;
     double currentTime = CACurrentMediaTime();
-    if (lastRampTime == 0) lastRampTime = currentTime;
-    double deltaTime = currentTime - lastRampTime;
-    lastRampTime = currentTime;
+    if (self.lastRampTime == 0.0) {
+        self.lastRampTime = currentTime;
+    }
+    double deltaTime = currentTime - self.lastRampTime;
+    self.lastRampTime = currentTime;
     
     // Ramp current values toward targets for smooth transitions
     self.currentFrequency = [self rampValue:self.currentFrequency toward:self.targetFrequency withDeltaTime:deltaTime timeConstantMs:kFrequencyRampTimeMs];

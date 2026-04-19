@@ -6,6 +6,7 @@
 //
 
 #import "CreakAudioEngine.h"
+#import <QuartzCore/QuartzCore.h>
 
 // Audio parameter mapping constants
 static const double kDeadzone = 1.0;          // deg/s - below this: treat as still
@@ -48,6 +49,7 @@ static const double kAdditionalDecayFactor = 0.8;     // Additional decay after 
 @property (nonatomic, assign) double currentRate;
 @property (nonatomic, assign) BOOL isFirstUpdate;
 @property (nonatomic, assign) NSTimeInterval lastMovementTime;
+@property (nonatomic, assign) double lastRampTime;
 
 @end
 
@@ -66,6 +68,7 @@ static const double kAdditionalDecayFactor = 0.8;     // Additional decay after 
         _targetRate = 1.0;
         _currentGain = 0.0;
         _currentRate = 1.0;
+        _lastRampTime = 0.0;
         
         if (![self setupAudioEngine]) {
             NSLog(@"[CreakAudioEngine] Failed to setup audio engine");
@@ -144,6 +147,7 @@ static const double kAdditionalDecayFactor = 0.8;     // Additional decay after 
     
     // Start looping the creak sound
     [self startCreakLoop];
+    self.lastRampTime = 0.0;
 }
 
 - (void)stopEngine {
@@ -295,12 +299,12 @@ static const double kAdditionalDecayFactor = 0.8;     // Additional decay after 
         return;
     }
     
-    // Calculate delta time for ramping
-    static double lastRampTime = 0;
     double currentTime = CACurrentMediaTime();
-    if (lastRampTime == 0) lastRampTime = currentTime;
-    double deltaTime = currentTime - lastRampTime;
-    lastRampTime = currentTime;
+    if (self.lastRampTime == 0.0) {
+        self.lastRampTime = currentTime;
+    }
+    double deltaTime = currentTime - self.lastRampTime;
+    self.lastRampTime = currentTime;
     
     // Ramp current values toward targets for smooth transitions
     self.currentGain = [self rampValue:self.currentGain toward:self.targetGain withDeltaTime:deltaTime timeConstantMs:kGainRampTimeMs];

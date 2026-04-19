@@ -2,7 +2,21 @@
 
 Hi, I’m Sam Gold. Did you know that you have ~rights~ a lid angle sensor in your MacBook? [The ~Constitution~ human interface device utility says you do.](https://youtu.be/wqnHtGgVAUE?t=21)
 
-This is a little utility that shows the angle from the sensor and, optionally, plays a wooden door creaking sound if you adjust it reeaaaaaal slowly.
+This is a little utility that shows the angle from the sensor and, optionally, plays a wooden door creaking sound if you adjust it reeaaaaaal slowly. There is also a simple synthesized “theremin” mode.
+
+## Publish your own copy (GitHub)
+
+1. Create an empty repository on GitHub (no README required).
+2. Point `origin` at it (use `set-url` if `origin` already exists), then push:
+
+```bash
+git remote remove origin   # only if you are replacing an existing remote
+git remote add origin https://github.com/YOUR_USER/YOUR_REPO.git
+git branch -M main
+git push -u origin main
+```
+
+Use a personal access token or SSH remote if GitHub prompts for credentials.
 
 ## FAQ
 
