@@ -1,97 +1,65 @@
-# Lid Angle Sensor
+# Mac Lid Angle & Weight Sensor
 
-Hi, I’m Sam Gold. Did you know that you have ~rights~ a lid angle sensor in your MacBook? [The ~Constitution~ human interface device utility says you do.](https://youtu.be/wqnHtGgVAUE?t=21)
+A small **macOS** utility that reads your MacBook **lid angle** from the built-in HID sensor, shows **estimated mass** from **Force Touch** trackpad pressure (demo only, not a calibrated scale), and can play **creak** or **synthesized theremin** audio that follows lid motion. Master output level is adjustable in the app.
 
-This is a little utility that shows the angle from the sensor and, optionally, plays a wooden door creaking sound if you adjust it reeaaaaaal slowly. There is also a simple synthesized “theremin” mode.
+**Maintainer:** [Dev Muhammad Junaid](https://github.com/Dev-Muhammad-Junaid) · [Dev.MuhammadJunaid@gmail.com](mailto:Dev.MuhammadJunaid@gmail.com)  
+**Repository:** [github.com/Dev-Muhammad-Junaid/mac-lid-angle-and-weight-sensor](https://github.com/Dev-Muhammad-Junaid/mac-lid-angle-and-weight-sensor)
 
-The in-app **trackpad “scale”** is a rough demo based on Force Touch pressure (not a real scale). Use **Tare** with your finger resting on the pad, then press again with an object. Mass can be shown in **g, kg, lb, or oz**. Lid angle is read as a plain 16-bit degree value from the HID report on the hardware this was tested against; if your machine reports a different unit, adjust `lidAngle` in `LidAngleSensor.m`.
+This fork is maintained independently. The original idea and early implementation came from [Sam Henri Gold](https://github.com/samhenrigold)’s public project; this codebase, UI, weight readout, and packaging are evolved here under the same [MIT License](LICENSE) (see file for copyright and terms).
 
-## Publish your own copy (GitHub)
+---
 
-1. Create an empty repository on GitHub (no README required).
-2. Point `origin` at it (use `set-url` if `origin` already exists), then push:
+## Supported platform
 
-```bash
-git remote remove origin   # only if you are replacing an existing remote
-git remote add origin https://github.com/YOUR_USER/YOUR_REPO.git
-git branch -M main
-git push -u origin main
-```
+| | |
+| --- | --- |
+| **OS** | **macOS 11.5 (Big Sur) or later** — AppKit, **Apple Silicon or Intel** |
+| **Not supported** | iOS, iPadOS, tvOS, visionOS, Windows, Linux |
 
-Use a personal access token or SSH remote if GitHub prompts for credentials.
+The Xcode target sets `MACOSX_DEPLOYMENT_TARGET` to **11.5** for the app. You need a Mac that can build and run a standard macOS `.app` (Xcode or command-line tools).
 
-## FAQ
+---
 
-**What is a lid angle sensor?**
+## Hardware: what actually works
 
-Despite what the name would have you believe, it is a sensor that detects the angle of the lid.
+### Lid angle
 
-**Which devices have a lid angle sensor?**
+The app looks for a specific **IOHID** match (Apple vendor, a fixed product ID, sensor usage page **0x0020**, orientation usage **0x008A**). Implementation: `LidAngleSensor.m` (`findLidAngleSensor`).
 
-It was introduced with the 2019 16-inch MacBook Pro. If your laptop is newer, you probably have it.
+- **Works on:** MacBook **Pro** models (and potentially other Apple notebooks) that expose **that** HID device. It has been **validated on Apple Silicon MacBook Pro** with the sensor present.
+- **Typically does not work on:** iMac, Mac mini, Mac Studio, Mac Pro, and most MacBook **Air** configurations — they usually **do not** ship this lid sensor HID surface (or use different IDs).
 
-**My laptop should have it, why doesn't it show up?**
+If the sensor is missing, the app shows that no lid sensor was found. If your machine should have a sensor but nothing matches, the HID product ID or report layout may differ from this build; extending the matcher in `LidAngleSensor.m` is the right place to adapt it.
 
-I've only tested this on my M4 MacBook Pro and have hard-coded it to look for a specific sensor. If that doesn't work, try running [this script](https://gist.github.com/samhenrigold/42b5a92d1ee8aaf2b840be34bff28591) and report the output in [an issue](https://github.com/samhenrigold/LidAngleSensor/issues/new/choose).
+### “Weight” (trackpad)
 
-**Can I use this on my iMac?**
+Mass is derived from **NSEvent** trackpad **pressure** while the app is frontmost (`WeightSensor.m`). You need a **Force Touch** trackpad (recent MacBook trackpads). This is a **rough relative estimate**, not a legal-for-trade scale.
 
-Not yet tested. Feel free to slam your computer into your desk and make a PR with your results.
+### Angle value
 
-**Why?**
+The 16-bit HID field is treated as **degrees** on hardware used for testing (`LidAngleSensor.m`). If a future Mac reports a different unit, adjust the conversion there.
 
-A lot of free time. I'm open to full-time work in NYC or remote. I'm a designer/design-engineer. https://samhenri.gold
+---
 
-**No I mean like why does my laptop need to know the exact angle of its lid?**
+## Features (current codebase)
 
-Oh. I don't know.
+- Live **lid angle** (degrees) and **angular rate** (from the audio engine) when audio is available  
+- **Status** hint (closed / ajar / open / wide open) based on angle bands  
+- **Mass** display in **g**, **kg**, **lb**, or **oz** when Force Touch events are available  
+- **Audio:** creak vs. “alien” theremin segment, play/stop, **master volume** slider (persisted in `UserDefaults`)
 
-**Can I contribute?**
+---
 
-I guess.
+## Build and run
 
-**Why does it say it's by Lisa?**
-
-I signed up for my developer account when I was a kid, used my mom's name, and now it's stuck that way forever and I can't change it. That's life.
-
-**How come the audio feels kind of...weird?**
-
-I'm bad at audio.
-
-**Where did the sound effect come from?**
-
-LEGO Batman 3: Beyond Gotham. But you knew that already.
-
-**Can I turn off the sound?**
-
-Yes, never click "Start Audio". But this energy isn't encouraged.
-
-## Build and Run (Terminal)
-
-You can build and launch the app without Xcode’s UI using `xcodebuild`.
-
-### Prerequisites
-
-- macOS with Xcode or Xcode Command Line Tools (`xcode-select --install` and maybe `xcodebuild -runFirstLaunch`)
-- Optional: GitHub CLI (`gh`) — or use `git clone` instead
-
-### Clone
-
-Using GitHub CLI:
+**Prerequisites:** macOS with **Xcode** or **Xcode Command Line Tools** (`xcode-select --install`).
 
 ```bash
-gh repo clone samhenrigold/LidAngleSensor
-cd LidAngleSensor
+git clone https://github.com/Dev-Muhammad-Junaid/mac-lid-angle-and-weight-sensor.git
+cd mac-lid-angle-and-weight-sensor
 ```
 
-Or with Git:
-
-```bash
-git clone https://github.com/samhenrigold/LidAngleSensor.git
-cd LidAngleSensor
-```
-
-### Build (Debug)
+### Debug build (example, no code signing)
 
 ```bash
 xcodebuild \
@@ -103,9 +71,7 @@ xcodebuild \
   -arch arm64
 ```
 
-Notes:
-- On Apple Silicon, `-arch arm64` is correct. On Intel Macs, you can use `-arch x86_64` or omit `-arch`. Intel macs don't have the feature tho, so it won't be very useful. 
-- Disabling code signing is fine for local debug builds if you are not Mr. Gold. 
+On **Intel** Macs, use `-arch x86_64` or omit `-arch`. Lid-angle hardware is still limited to supported notebooks as above.
 
 ### Run
 
@@ -113,4 +79,10 @@ Notes:
 open build/Build/Products/Debug/LidAngleSensor.app
 ```
 
-If you built a Release configuration, adjust the path accordingly (replace `Debug` with `Release`).
+For **Release**, change `Debug` to `Release` in the path. Adjust signing in Xcode if you distribute a signed build.
+
+---
+
+## Contributing
+
+Issues and pull requests are welcome on this repository. Please mention your **Mac model**, **macOS version**, and whether **HID** or **pressure** readouts fail when reporting bugs.
