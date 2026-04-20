@@ -4,6 +4,8 @@ Hi, I’m Sam Gold. Did you know that you have ~rights~ a lid angle sensor in yo
 
 This is a little utility that shows the angle from the sensor and, optionally, plays a wooden door creaking sound if you adjust it reeaaaaaal slowly. There is also a simple synthesized “theremin” mode.
 
+The in-app **trackpad “scale”** is a rough demo based on Force Touch pressure (not a real scale). Use **Tare** with your finger resting on the pad, then press again with an object. Mass can be shown in **g, kg, lb, or oz**. Lid angle is read as a plain 16-bit degree value from the HID report on the hardware this was tested against; if your machine reports a different unit, adjust `lidAngle` in `LidAngleSensor.m`.
+
 ## Publish your own copy (GitHub)
 
 1. Create an empty repository on GitHub (no README required).

@@ -154,6 +154,11 @@ static const double kSampleRate = 44100.0;
     return self.audioEngine.isRunning;
 }
 
+- (void)setMasterOutputVolume:(float)volume {
+    float v = fmaxf(0.f, fminf(1.f, volume));
+    self.audioEngine.mainMixerNode.volume = v;
+}
+
 #pragma mark - Sine Wave Generation
 
 - (OSStatus)renderSineWave:(BOOL *)isSilence

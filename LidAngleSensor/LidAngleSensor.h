@@ -18,7 +18,7 @@
  * Device Specifications (discovered through reverse engineering):
  * - Apple device: VID=0x05AC, PID=0x8104
  * - HID Usage: Sensor page (0x0020), Orientation usage (0x008A)
- * - Data format: 16-bit angle in centidegrees; `lidAngle` returns degrees
+ * - Data format: 16-bit angle in degrees on tested hardware (see implementation note)
  * - Range: 0-360 degrees
  */
 @interface LidAngleSensor : NSObject

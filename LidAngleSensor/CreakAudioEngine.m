@@ -163,6 +163,11 @@ static const double kAdditionalDecayFactor = 0.8;     // Additional decay after 
     return self.audioEngine.isRunning;
 }
 
+- (void)setMasterOutputVolume:(float)volume {
+    float v = fmaxf(0.f, fminf(1.f, volume));
+    self.audioEngine.mainMixerNode.volume = v;
+}
+
 #pragma mark - Creak Loop Management
 
 - (void)startCreakLoop {

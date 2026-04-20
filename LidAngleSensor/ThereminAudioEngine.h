@@ -59,4 +59,7 @@
  */
 - (void)setAngularVelocity:(double)velocity;
 
+/// Master output gain (0–1) on the engine mixer.
+- (void)setMasterOutputVolume:(float)volume;
+
 @end
