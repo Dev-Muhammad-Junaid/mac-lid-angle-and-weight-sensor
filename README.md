@@ -2,9 +2,6 @@
 
 A small **macOS** utility that reads your MacBook **lid angle** from the built-in HID sensor, shows **estimated mass** from **Force Touch** trackpad pressure (demo only, not a calibrated scale), and can play **creak** or **synthesized theremin** audio that follows lid motion. Master output level is adjustable in the app.
 
-**Maintainer:** [Dev Muhammad Junaid](https://github.com/Dev-Muhammad-Junaid) · [Dev.MuhammadJunaid@gmail.com](mailto:Dev.MuhammadJunaid@gmail.com)  
-**Repository:** [github.com/Dev-Muhammad-Junaid/mac-lid-angle-and-weight-sensor](https://github.com/Dev-Muhammad-Junaid/mac-lid-angle-and-weight-sensor)
-
 This fork is maintained independently. The original idea and early implementation came from [Sam Henri Gold](https://github.com/samhenrigold)’s public project; this codebase, UI, weight readout, and packaging are evolved here under the same [MIT License](LICENSE) (see file for copyright and terms).
 
 ---
